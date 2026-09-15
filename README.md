@@ -17,24 +17,34 @@ List the available skills:
 npx skills add Danztee/javascript-typescript-agent-skills --list
 ```
 
-Install both into Codex:
+Install both skills to the agents detected on your machine:
 
 ```bash
 npx skills add Danztee/javascript-typescript-agent-skills \
   --skill javascript-engineering \
-  --skill typescript-engineering \
-  --agent codex \
-  --global
+  --skill typescript-engineering
 ```
 
-Install one skill:
+Install both skills for specific agents, for example Codex, Claude Code, and Cursor:
 
 ```bash
 npx skills add Danztee/javascript-typescript-agent-skills \
-  --skill typescript-engineering \
+  --skill '*' \
   --agent codex \
+  --agent claude-code \
+  --agent cursor \
   --global
 ```
+
+Install every skill to every supported agent:
+
+```bash
+npx skills add Danztee/javascript-typescript-agent-skills --all
+```
+
+Use `--global` for user-wide installation. Omit it to install into the current project. The CLI supports many agents, including Codex, Claude Code, Cursor, OpenCode, Windsurf, GitHub Copilot, Gemini CLI, and others; run `npx skills add --help` for the current list.
+
+The `agents/openai.yaml` files contain optional Codex UI metadata. They do not make these skills Codex-only; other agents use the portable `SKILL.md` files.
 
 ## Development
 
