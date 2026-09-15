@@ -1,11 +1,28 @@
 ---
 name: javascript-engineering
-description: Build, change, debug, and review modern JavaScript for browser, Node.js, and full-stack projects while matching the repository's runtime, module system, and tooling.
+description: "Use when building, changing, debugging, or reviewing JavaScript for browser, Node.js, or full-stack projects, especially when async behavior, runtime boundaries, modules, dependencies, or tooling choices matter."
 ---
 
 # JavaScript engineering
 
 Use this skill for JavaScript implementation, refactoring, debugging, and code review. Optimize for code that is clear, idiomatic, observable, and easy to change—not for maximum ceremony.
+
+## Operating procedure
+
+1. Inspect the repository and the nearest code that solves the same problem.
+2. Choose the existing convention; if none exists, apply the defaults in this skill consistently.
+3. Implement the smallest complete change. Do not broaden the task with cleanup, package migrations, or speculative abstractions.
+4. Verify behavior at runtime as well as with tests, linting, or typechecking when those checks exist.
+5. Before finishing, review the change against the red flags below and report the checks that ran.
+
+## Agent reliability contract
+
+- Inspect before proposing: read the relevant files, package scripts, installed versions, and nearby tests before choosing an API or pattern.
+- Keep the patch scoped. Do not rewrite unrelated code, upgrade dependencies, change configuration, or add abstractions unless the requested behavior requires it.
+- Never invent an API, package export, framework option, or command from memory. Verify it against the installed package, repository source, or current official documentation.
+- Tests must assert the requested behavior and meaningful failure cases. Do not add tests that only assert a mock was called, return a constant, or duplicate the implementation's internals.
+- Do not declare success from a clean lint or typecheck alone when the change affects loading, serialization, I/O, browser behavior, or generated output. Run the narrowest real check available.
+- Do not hide a failing check with a fallback, broad catch, lint disable, or unrelated config change. Preserve the failure until its cause is understood or report the concrete blocker.
 
 ## First inspect the project
 
@@ -92,10 +109,13 @@ When reviewing JavaScript, prioritize:
 6. `forEach(async ...)`, un-awaited `map(async ...)`, accidental sequential awaits, promise-wrapping of promise APIs, and `||`/`??` mistakes.
 7. Inconsistent module/export choices, hidden mutation, `filter(...)[0]` where `find` expresses intent, and optional chaining that masks a broken invariant.
 8. Ambiguous dates, dependency churn, global state added without ownership justification, unbounded concurrency, and changes verified only by linting or typechecking.
+9. Invented or stale APIs, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
 
 Do not request a stylistic rewrite when the code is correct, readable, and consistent with the repository.
 
 ## Reference material
+
+Read [references/decision-rules.md](references/decision-rules.md) when you need concrete before/after examples for the highest-impact rules.
 
 Use these as grounding, not as a mandatory one-size-fits-all style guide:
 

@@ -1,11 +1,28 @@
 ---
 name: typescript-engineering
-description: Build, change, debug, and review TypeScript with useful static guarantees, precise boundaries, and practical runtime behavior for the project's framework and toolchain.
+description: "Use when building, changing, debugging, or reviewing TypeScript, especially when type design, runtime boundaries, async behavior, module resolution, declarations, or compiler/tooling choices matter."
 ---
 
 # TypeScript engineering
 
 Use this skill for TypeScript implementation, refactoring, debugging, type design, and code review. Treat the type system as a tool for making valid states easy to represent—not as a reason to add ceremony or encode every possibility in types.
+
+## Operating procedure
+
+1. Inspect the repository, compiler/build configuration, and the nearest code with the same API shape.
+2. Choose the existing convention; if none exists, apply the defaults in this skill consistently.
+3. Keep compile-time contracts and runtime validation separate, and implement the smallest complete change.
+4. Verify both type-level and runtime behavior when the change can affect either; do not treat a clean typecheck as runtime proof.
+5. Before finishing, review the change against the red flags below and report the checks that ran.
+
+## Agent reliability contract
+
+- Inspect before proposing: read the relevant files, `package.json`, compiler/build configuration, installed versions, and nearby tests before choosing an API or type pattern.
+- Keep the patch scoped. Do not rewrite unrelated code, upgrade dependencies, change `tsconfig`, or add abstractions unless the requested behavior requires it.
+- Never invent an API, package export, compiler option, or framework pattern from memory. Verify it against installed declarations/source, repository configuration, or current official documentation.
+- Tests must assert behavior and meaningful failure cases. Do not add tests that only assert a mock was called, return a constant, or reproduce the implementation's branches without exercising the contract.
+- Do not declare success from a clean typecheck alone when the change affects emitted JavaScript, module loading, serialization, declarations, decorators, JSX, or runtime loaders. Run the narrowest real check available.
+- Do not hide a failing check with `any`, `as`, `@ts-ignore`, a lint disable, a broad catch, `skipLibCheck`, or an unrelated config change. Preserve the failure until its cause is understood or report the concrete blocker.
 
 ## First inspect the project
 
@@ -101,10 +118,13 @@ Prioritize:
 6. `as` used to silence an error, non-null assertions, leaked `any`, dumping unknown data into `Record<string, unknown>`, and `Partial<T>` used where the API really requires a complete value.
 7. `forEach(async ...)`, un-awaited `map(async ...)`, accidental sequential awaits, inconsistent `type`/`interface` or enum/union choices, and runtime checks duplicated after parsing.
 8. Date/time ambiguity, dependency churn, typechecking-only verification, runtime/module-resolution mismatches, unexplained compiler or typed-lint slowdowns, and configuration changes unrelated to the requested behavior.
+9. Invented or stale APIs, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
 
 Do not recommend a type-level abstraction, compiler flag, or validation layer merely because it exists. Recommend it when it prevents a demonstrated class of bugs or materially clarifies the contract.
 
 ## Reference material
+
+Read [references/decision-rules.md](references/decision-rules.md) when you need concrete before/after examples for the highest-impact rules.
 
 - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/
 - TypeScript narrowing: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
