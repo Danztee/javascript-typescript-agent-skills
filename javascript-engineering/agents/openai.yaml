@@ -1,0 +1,7 @@
+interface:
+  display_name: "JavaScript Engineering"
+  short_description: "Modern JavaScript without needless guards"
+  default_prompt: "Use $javascript-engineering to implement or review this JavaScript task in the project's existing style."
+
+policy:
+  allow_implicit_invocation: true

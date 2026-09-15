@@ -1,0 +1,7 @@
+interface:
+  display_name: "TypeScript Engineering"
+  short_description: "Precise types without type-system ceremony"
+  default_prompt: "Use $typescript-engineering to implement or review this TypeScript task with practical runtime boundaries."
+
+policy:
+  allow_implicit_invocation: true
