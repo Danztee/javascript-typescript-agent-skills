@@ -2,6 +2,8 @@
 
 Reusable engineering guidance for coding agents working in JavaScript and TypeScript repositories.
 
+[![skills.sh](https://skills.sh/b/Danztee/javascript-typescript-agent-skills)](https://skills.sh/Danztee/javascript-typescript-agent-skills)
+
 The skills favor project consistency, correct runtime behavior, and proportionate validation. They deliberately avoid adding defensive checks, dependencies, abstractions, or configuration changes without a real reason.
 
 ## Skills
