@@ -64,6 +64,7 @@ These are common sources of wasted time and “almost correct” agent output:
 - Configuration and upgrades: preserve reproducible lockfiles and existing `tsconfig` inheritance. Enable stricter compiler/lint profiles incrementally; do not enable every rule or flag during an unrelated feature change, especially when the resulting errors cannot be triaged in scope.
 - Dates and time: make timezone, locale, precision, and serialization explicit. Do not rely on ambiguous external date parsing or silently treat a local time as UTC. Follow the project's date library or supported platform API.
 - Debugging: reproduce the failure, form a narrow hypothesis, inspect source/config/generated output, and make the smallest fix that explains the behavior. Do not change several unrelated variables and call the first green run proof.
+- Package and API boundaries: inspect workspace scripts, package manager, `exports`, module type, declaration output, generated artifacts, and the actual consumer/runtime before changing a package boundary. Identify public exports and serialization contracts before making a potentially breaking change.
 - Agent drift: do not copy a remembered framework recipe over the installed version. Do not add `eslint-disable`, `@ts-ignore`, broad assertions, or a new package merely to silence a diagnostic; explain and verify the underlying issue instead.
 
 ## Type design
@@ -100,6 +101,8 @@ TypeScript types are erased at runtime. Separate compile-time contracts from run
 - Do not leave promises unhandled. An intentional fire-and-forget call should have an explicit, repository-appropriate convention and a known rejection strategy; `void` alone documents intent but does not handle a rejection.
 - Catch `unknown` errors safely at the layer that can recover, translate, clean up, or report. Preserve causes and useful domain context; do not swallow errors or log the same failure at every layer.
 - Keep runtime API contracts aligned with the types. If a function can return `undefined`, make callers handle that; if it cannot, do not add a meaningless fallback just to silence a concern.
+- For collections whose size comes from users, files, queues, or external services, do not use unbounded `Promise.all` by reflex. Use the project's existing limiter, batching, or incremental processing when concurrency, memory, rate limits, or cancellation require it.
+- When an operation owns timers, listeners, subscriptions, streams, sockets, or clients, define its cleanup and cancellation path. Reuse an existing `AbortSignal` or lifecycle convention instead of inventing a one-off abstraction.
 
 ## Testing and verification
 
@@ -111,7 +114,7 @@ TypeScript types are erased at runtime. Separate compile-time contracts from run
 
 Prioritize:
 
-1. Type/runtime mismatches, unsound assertions, leaked `any`, and incorrect optionality.
+1. Type/runtime mismatches, unsound assertions, leaked `any`, incorrect optionality, and cleanup failures.
 2. Missing validation at real external boundaries and duplicated validation inside trusted code.
 3. Async errors, floating promises, race conditions, and cleanup behavior.
 4. Public API compatibility, module-resolution/package-export mistakes, and generated declaration quality.
@@ -119,7 +122,7 @@ Prioritize:
 6. `as` used to silence an error, non-null assertions, leaked `any`, dumping unknown data into `Record<string, unknown>`, and `Partial<T>` used where the API really requires a complete value.
 7. `forEach(async ...)`, un-awaited `map(async ...)`, accidental sequential awaits, inconsistent `type`/`interface` or enum/union choices, and runtime checks duplicated after parsing.
 8. Date/time ambiguity, dependency churn, typechecking-only verification, runtime/module-resolution mismatches, unexplained compiler or typed-lint slowdowns, and configuration changes unrelated to the requested behavior.
-9. Invented or stale APIs, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
+9. Invented or stale APIs, accidental public-contract breaks, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
 
 Do not recommend a type-level abstraction, compiler flag, or validation layer merely because it exists. Recommend it when it prevents a demonstrated class of bugs or materially clarifies the contract.
 

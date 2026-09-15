@@ -50,6 +50,8 @@ const [user, settings] = await Promise.all([
 
 Do not use `forEach(async ...)`, leave promises floating, or treat a typecheck as runtime proof. When changing module resolution, package exports, declarations, decorators, JSX, or loaders, verify emitted/imported behavior with the real build or runtime.
 
+When a collection can be large or externally controlled, bound concurrency with the project's existing limiter or process incrementally. Consider memory, rate limits, failure semantics, and cancellation before starting all operations. If the operation owns resources, thread an existing `AbortSignal` and pair acquisition with cleanup through `finally` or the project's lifecycle hook.
+
 ## Compiler and lint performance
 
 Do not annotate everything or enable every strict/type-aware lint rule during an unrelated feature. If compilation, editor, declaration emit, or linting is slow, measure first; then add named boundaries, split complex types, or narrow lint scope where that addresses the measured cause.

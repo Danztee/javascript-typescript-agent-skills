@@ -22,6 +22,10 @@ const [user, settings, flags] = await Promise.all([
 
 Use `for...of` when each iteration intentionally depends on the previous one. Use `map` plus `Promise.all` when each operation is independent. Do not use `forEach(async ...)` when the caller must wait.
 
+When the collection can be large or externally controlled, bound concurrency with the project's existing limiter or process incrementally. Consider memory, rate limits, failure semantics, and cancellation before starting all operations.
+
+If the operation creates timers, listeners, subscriptions, streams, or clients, pair ownership with cleanup through `finally` or the project's lifecycle hook. Thread an existing `AbortSignal` when cancellation is part of the surrounding contract.
+
 ## Boundary validation
 
 Parse an external value once, then pass the trusted representation inward:

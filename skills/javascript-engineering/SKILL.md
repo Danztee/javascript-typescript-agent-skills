@@ -61,6 +61,7 @@ These are common sources of wasted time and “almost correct” agent output:
 - Build/runtime behavior: verify the actual entrypoint, package `type`, extensions, import specifiers, exports, bundler transforms, and test runtime. Code that parses or lints successfully is not necessarily runnable code.
 - Debugging: reproduce the failure, form a narrow hypothesis, inspect the relevant source/config/generated output, and make the smallest fix that explains the behavior. Do not change several unrelated variables and call the first green run proof.
 - Performance: measure before micro-optimizing, but catch obvious accidental costs such as unbounded concurrency, repeated expensive work in loops, accidental quadratic scans, N+1 I/O, and unbounded caches.
+- Package and API boundaries: inspect workspace scripts, package manager, `exports`, module type, generated artifacts, and the actual consumer/runtime before changing a package boundary. Identify public exports and serialization contracts before making a potentially breaking change.
 - Agent drift: do not copy a remembered framework recipe over the installed version. Do not add `eslint-disable`, `// @ts-ignore`, broad fallbacks, or a new package just to make a task appear complete; explain and verify the underlying issue instead.
 
 ## Core coding guidance
@@ -79,7 +80,9 @@ These are common sources of wasted time and “almost correct” agent output:
 - Catch errors only when you can recover, add useful context, translate to a domain error, or perform required cleanup. Do not catch merely to rethrow, log and rethrow at every layer, or replace a useful error with a generic one.
 - Preserve error causes when wrapping (`new Error(message, { cause: error })` where the runtime supports it) and keep user-facing/logging decisions at an appropriate boundary.
 - Do not add `try`/`catch` around every `await`. Let errors propagate to the nearest layer that can make a meaningful decision.
+- For collections whose size comes from users, files, queues, or external services, do not use unbounded `Promise.all` by reflex. Use the project's existing limiter, batching, or incremental processing when concurrency, memory, rate limits, or cancellation require it.
 - Make resource cleanup explicit with the project's supported mechanism (`finally`, disposers, abort signals, or framework lifecycle hooks).
+- When an operation owns timers, listeners, subscriptions, streams, sockets, or clients, define its cleanup and cancellation path. Reuse an existing `AbortSignal` or lifecycle convention instead of inventing a one-off abstraction.
 
 ## Validation and defensive programming
 
@@ -102,7 +105,7 @@ Use the smallest amount of validation that protects a real boundary or contract:
 
 When reviewing JavaScript, prioritize:
 
-1. Incorrect async sequencing, ignored rejections, races, and cleanup failures.
+1. Incorrect async sequencing, ignored rejections, races, unbounded work, and cleanup failures.
 2. Trust-boundary mistakes, injection/encoding issues, authorization gaps, and unsafe evaluation.
 3. Incorrect assumptions about `undefined`, `null`, falsy values, mutation, or module loading.
 4. Error handling that loses context or silently changes failure into success.
@@ -110,7 +113,7 @@ When reviewing JavaScript, prioritize:
 6. `forEach(async ...)`, un-awaited `map(async ...)`, accidental sequential awaits, promise-wrapping of promise APIs, and `||`/`??` mistakes.
 7. Inconsistent module/export choices, hidden mutation, `filter(...)[0]` where `find` expresses intent, and optional chaining that masks a broken invariant.
 8. Ambiguous dates, dependency churn, global state added without ownership justification, unbounded concurrency, and changes verified only by linting or typechecking.
-9. Invented or stale APIs, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
+9. Invented or stale APIs, accidental public-contract breaks, tests with weak assertions or excessive mocks, unrelated file churn, suppressed diagnostics, and completion claims without evidence.
 
 Do not request a stylistic rewrite when the code is correct, readable, and consistent with the repository.
 

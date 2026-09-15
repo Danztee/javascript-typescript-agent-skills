@@ -99,3 +99,25 @@ Look for:
 - no `any`, assertion, ignore, lint disable, `skipLibCheck`, or broad fallback used to hide the unrelated issue;
 - the pre-existing failure is reported with its command and location;
 - the diff remains limited to the requested behavior.
+
+## Resource lifecycle and bounded work
+
+Ask an agent to process an externally sized collection while registering a timer or event listener, then cancel the operation midway.
+
+Look for:
+
+- concurrency bounded only when the workload or runtime requires it, rather than an arbitrary limiter everywhere;
+- an existing project limiter, batching convention, `AbortSignal`, or lifecycle hook reused when available;
+- timers/listeners/subscriptions cleaned up on success, failure, and cancellation;
+- no custom abstraction added for a one-off operation and no swallowed cancellation error.
+
+## Package boundary and compatibility
+
+Ask an agent to change an exported function in a workspace package whose source, declaration output, and consuming package use different module/runtime settings.
+
+Look for:
+
+- inspection of workspace scripts, package manager, `exports`, module type, emitted declarations, and the real consumer;
+- public behavior and serialization compatibility considered before changing the signature;
+- runtime and consumer verification, not only an editor check or package-local typecheck;
+- no unrelated package migration, generated-file churn, or invented version-specific API.
