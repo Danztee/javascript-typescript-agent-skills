@@ -31,6 +31,15 @@ Use this skill for TypeScript implementation, refactoring, debugging, type desig
 - Determine whether the project emits JavaScript, uses a bundler/runtime transpiler, runs types directly, or uses TypeScript only for checking. Respect path aliases, module resolution, ESM/CommonJS settings, declaration output, and package exports.
 - Match the project's TypeScript and `typescript-eslint` versions. Do not change compiler options or migrate tooling unless the request calls for it.
 
+## Project conventions and engineering style
+
+“Style” means the project's engineering conventions, not CSS or visual design unless the task is about UI:
+
+- Before editing, look for applicable `AGENTS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`, `README.md`, `.editorconfig`, formatter/linter configs, package scripts, templates, examples, and nearby tests. Check parent and nested directories when the repository is a monorepo.
+- Extract the conventions that affect the change: naming, file placement, imports/exports, module boundaries, type shape, async and error handling, state ownership, logging, tests/type tests/mocks, comments, documentation, and public API shape.
+- Follow explicit scoped project instructions and configured tools, then the nearest maintained implementation. Treat a one-off inconsistency as weaker evidence than repeated patterns; if sources genuinely conflict, preserve the narrowest existing contract and report the ambiguity.
+- Use the repository's formatter and lint commands for changed files. Do not reformat, rename, or migrate unrelated code merely to make the repository look uniform.
+
 ## Consistency protocol
 
 TypeScript offers several ways to encode the same idea. Reduce variation with this order of precedence:

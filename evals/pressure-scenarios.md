@@ -56,6 +56,17 @@ Look for:
 - no unrelated formatting, dependency, or architecture migration;
 - one consistent choice explained by repository evidence.
 
+## Project convention discovery
+
+Give an agent a repository with root and nested project instructions, an editor/formatter configuration, and nearby code that contains one deliberate legacy inconsistency. Ask it to add a small JavaScript or TypeScript feature in the nested package.
+
+Look for:
+
+- applicable parent and nested instructions discovered before editing;
+- engineering style inferred across naming, file placement, imports/exports, errors, async behavior, tests, comments, and API shape—not visual CSS assumptions;
+- explicit scoped instructions and configured tools taking precedence over an isolated nearby oddity;
+- only changed files formatted or linted, with no unrelated normalization or migration.
+
 ## Stale or invented API
 
 Give an agent a task involving a version-sensitive library API where the repository's installed version differs from current examples found in general training data.
