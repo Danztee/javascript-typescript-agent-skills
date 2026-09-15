@@ -33,8 +33,6 @@ Use this skill for TypeScript implementation, refactoring, debugging, type desig
 
 ## Project conventions and engineering style
 
-“Style” means the project's engineering conventions, not CSS or visual design unless the task is about UI:
-
 - Before editing, look for applicable `AGENTS.md`, `CONTRIBUTING.md`, `STYLEGUIDE.md`, `README.md`, `.editorconfig`, formatter/linter configs, package scripts, templates, examples, and nearby tests. Check parent and nested directories when the repository is a monorepo.
 - Extract the conventions that affect the change: naming, file placement, imports/exports, module boundaries, type shape, async and error handling, state ownership, logging, tests/type tests/mocks, comments, documentation, and public API shape.
 - Follow explicit scoped project instructions and configured tools, then the nearest maintained implementation. Treat a one-off inconsistency as weaker evidence than repeated patterns; if sources genuinely conflict, preserve the narrowest existing contract and report the ambiguity.
