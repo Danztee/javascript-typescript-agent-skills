@@ -71,6 +71,18 @@ These are common sources of wasted time and “almost correct” agent output:
 - Package and API boundaries: inspect workspace scripts, package manager, `exports`, module type, generated artifacts, and the actual consumer/runtime before changing a package boundary. Identify public exports and serialization contracts before making a potentially breaking change.
 - Agent drift: do not copy a remembered framework recipe over the installed version. Do not add `eslint-disable`, `// @ts-ignore`, broad fallbacks, or a new package just to make a task appear complete; explain and verify the underlying issue instead.
 
+## Security at runtime boundaries
+
+Keep security controls where data crosses a trust boundary, using the framework and libraries already established by the project:
+
+- Do not concatenate untrusted values into SQL, shell commands, HTML, templates, filesystem paths, dynamic code, or redirects. Use parameterized/structured APIs, safe sinks, output encoding, sanitization, or allowlists appropriate to the context.
+- Treat parsed JSON, deserialized data, request parameters, uploaded files, environment values, and third-party responses as untrusted until the boundary contract is established. Never use `eval` or an unsafe deserialization shortcut to avoid parsing.
+- For user-controlled outbound URLs, enforce the application's intended schemes, hosts, ports, redirect behavior, and network policy where SSRF or open-redirect risk is real.
+- Preserve authentication, authorization, CSRF, rate/resource limits, secret handling, and dependency security controls already required by the application. Do not replace them with generic checks or type assumptions.
+- Keep secrets, tokens, passwords, and unnecessary sensitive data out of logs, thrown errors, and client responses. Follow the project's redaction and privacy conventions.
+
+Apply the smallest control that addresses the actual threat. Do not add speculative sanitization or validation that changes valid data or duplicates a trusted boundary.
+
 ## Core coding guidance
 
 - Prefer modern language features that the configured target supports: `const` by default, `let` when reassignment is real, modules, destructuring when it improves readability, and `async`/`await` for promise-based flows.
@@ -108,6 +120,13 @@ Use the smallest amount of validation that protects a real boundary or contract:
 - Prefer small deterministic tests and real collaborators when practical. Mock only unstable, expensive, unavailable, or externally owned dependencies.
 - After changes, run the narrowest relevant tests first, then the repository's type/build/lint checks when available. Report checks that could not be run and why.
 
+## Observability and logging
+
+- Follow the project's existing logger, structured fields, tracing, metrics, severity, and correlation/request-ID conventions. Do not introduce a second logging system for one feature.
+- Record useful context at the layer that owns the operation or can act on the failure. Preserve error causes and avoid logging the same error at every layer.
+- Include the event, outcome, relevant operation/resource identifiers, and timing or status data when the project uses them. Never log secrets, access tokens, passwords, or raw sensitive payloads.
+- Add instrumentation when it supports debugging, operations, security, or a stated product requirement—not as boilerplate on every function. Ensure logging failures do not turn a recoverable application failure into a new outage unless the contract requires fail-closed behavior.
+
 ## Review checklist
 
 When reviewing JavaScript, prioritize:
@@ -139,6 +158,10 @@ Use these as grounding, not as a mandatory one-size-fits-all style guide:
 - StandardJS rules: https://github.com/standard/standard/blob/master/RULES.md
 - Airbnb JavaScript Style Guide: https://github.com/airbnb/javascript
 - OWASP input validation guidance: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
+- OWASP XSS prevention: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+- OWASP injection prevention: https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html
+- OWASP SSRF prevention: https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+- OWASP logging guidance: https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html
 - State of JavaScript 2025 pain points: https://2025.stateofjs.com/en-US/usage/
 - 2025 Stack Overflow AI/developer workflow findings: https://survey.stackoverflow.co/2025/ai
 

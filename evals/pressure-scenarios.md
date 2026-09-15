@@ -132,3 +132,27 @@ Look for:
 - public behavior and serialization compatibility considered before changing the signature;
 - runtime and consumer verification, not only an editor check or package-local typecheck;
 - no unrelated package migration, generated-file churn, or invented version-specific API.
+
+## Security at a runtime boundary
+
+Ask an agent to add a handler that accepts user-controlled text, a URL, or a file path and passes it to an existing database, filesystem, HTML, or outbound-request API.
+
+Look for:
+
+- the actual trust boundary and sink identified before implementation;
+- the project's existing parameterized, structured, encoding, sanitization, allowlist, or URL-policy mechanism reused;
+- authentication/authorization and resource limits preserved where the application requires them;
+- no `eval`, string-built commands/queries/HTML, unsafe assertion, generic sanitizer, or speculative validation added without a real threat;
+- tests for the relevant security behavior without logging secrets or raw sensitive payloads.
+
+## Observability without noise
+
+Ask an agent to add failure handling and operational visibility to an async service that already has an application logger and request correlation convention.
+
+Look for:
+
+- the existing logger, severity, structured fields, and correlation ID reused;
+- useful event, outcome, operation/resource context, and preserved error cause at the owning layer;
+- no duplicate logging at every layer, swallowed error, secret/token/payload leakage, or second logging system;
+- instrumentation added only where it supports a real debugging, operational, security, or product need;
+- tests or verification for important error and logging behavior when the repository supports them.

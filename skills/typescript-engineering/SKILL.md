@@ -74,6 +74,18 @@ These are common sources of wasted time and “almost correct” agent output:
 - Package and API boundaries: inspect workspace scripts, package manager, `exports`, module type, declaration output, generated artifacts, and the actual consumer/runtime before changing a package boundary. Identify public exports and serialization contracts before making a potentially breaking change.
 - Agent drift: do not copy a remembered framework recipe over the installed version. Do not add `eslint-disable`, `@ts-ignore`, broad assertions, or a new package merely to silence a diagnostic; explain and verify the underlying issue instead.
 
+## Security at runtime boundaries
+
+TypeScript types do not enforce security after compilation. Keep controls where data crosses a trust boundary, using the framework and libraries already established by the project:
+
+- Do not concatenate untrusted values into SQL, shell commands, HTML, templates, filesystem paths, dynamic code, or redirects. Use parameterized/structured APIs, safe sinks, output encoding, sanitization, or allowlists appropriate to the context.
+- Treat `unknown` JSON, deserialized data, request parameters, uploaded files, environment values, and third-party responses as untrusted until parsing and the boundary contract are complete. Never replace that step with `as`, `any`, `eval`, or an unsafe deserialization shortcut.
+- For user-controlled outbound URLs, enforce the application's intended schemes, hosts, ports, redirect behavior, and network policy where SSRF or open-redirect risk is real.
+- Preserve authentication, authorization, CSRF, rate/resource limits, secret handling, and dependency security controls already required by the application. Do not replace them with generic checks or type assertions.
+- Keep secrets, tokens, passwords, and unnecessary sensitive data out of logs, thrown errors, and client responses. Follow the project's redaction and privacy conventions.
+
+Apply the smallest control that addresses the actual threat. Do not add speculative sanitization or validation that changes valid data or duplicates a trusted boundary.
+
 ## Type design
 
 - Prefer inference for obvious local values. Add explicit types where they document or constrain public APIs, exported data, callbacks, complex return values, and important boundaries.
@@ -117,6 +129,13 @@ TypeScript types are erased at runtime. Separate compile-time contracts from run
 - Keep type-level tests only for public type APIs or inference guarantees that users rely on; keep them small and use the project's established tool.
 - After changes, run the relevant tests plus the repository's typecheck/build/lint commands when available. Check emitted/runtime behavior when module resolution, declarations, decorators, or build transforms are involved.
 
+## Observability and logging
+
+- Follow the project's existing logger, structured fields, tracing, metrics, severity, and correlation/request-ID conventions. Do not introduce a second logging system for one feature.
+- Record useful context at the layer that owns the operation or can act on the failure. Preserve error causes and avoid logging the same error at every layer.
+- Include the event, outcome, relevant operation/resource identifiers, and timing or status data when the project uses them. Never log secrets, access tokens, passwords, or raw sensitive payloads.
+- Add instrumentation when it supports debugging, operations, security, or a stated product requirement—not as boilerplate on every function. Ensure logging failures do not turn a recoverable application failure into a new outage unless the contract requires fail-closed behavior.
+
 ## Review checklist
 
 Prioritize:
@@ -151,6 +170,10 @@ Read [references/decision-rules.md](references/decision-rules.md) when you need 
 - TypeScript compiler performance guidance: https://github.com/microsoft/TypeScript/wiki/Performance
 - TypeScript configuration/upgrade tradeoffs: https://github.com/microsoft/TypeScript/issues/50997
 - OWASP input validation guidance: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
+- OWASP XSS prevention: https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+- OWASP injection prevention: https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html
+- OWASP SSRF prevention: https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+- OWASP logging guidance: https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html
 - State of JavaScript 2025 pain points: https://2025.stateofjs.com/en-US/usage/
 - 2025 Stack Overflow AI/developer workflow findings: https://survey.stackoverflow.co/2025/ai
 
