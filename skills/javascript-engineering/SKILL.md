@@ -1,6 +1,7 @@
 ---
 name: javascript-engineering
 description: "Use when building, changing, debugging, or reviewing JavaScript for browser, Node.js, or full-stack projects, especially when async behavior, runtime boundaries, modules, dependencies, or tooling choices matter."
+license: MIT
 ---
 
 # JavaScript engineering

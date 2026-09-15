@@ -46,4 +46,6 @@ Test local discovery before pushing:
 npx skills add . --list
 ```
 
-Before making the repository public, add a license that matches how you want others to reuse the skills.
+## License
+
+MIT — see [LICENSE](LICENSE).

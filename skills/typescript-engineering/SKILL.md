@@ -1,6 +1,7 @@
 ---
 name: typescript-engineering
 description: "Use when building, changing, debugging, or reviewing TypeScript, especially when type design, runtime boundaries, async behavior, module resolution, declarations, or compiler/tooling choices matter."
+license: MIT
 ---
 
 # TypeScript engineering
